@@ -1,0 +1,24 @@
+{
+  "name": "that-boy-needs-p2p",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "npm run build && npm run preview",
+    "worker:dev": "wrangler dev --port 8787",
+    "worker:deploy": "wrangler deploy",
+    "check:turn": "node scripts/check-turn.js"
+  },
+  "dependencies": {
+    "@codemirror/state": "6.7.6",
+    "@codemirror/view": "6.43.15",
+    "@noble/post-quantum": "0.7.1"
+  },
+  "devDependencies": {
+    "vite": "8.0.16",
+    "wrangler": "4.168.0"
+  },
+  "license": "GPL-3.0-only"
+}

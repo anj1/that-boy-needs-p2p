@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="One-to-one end-to-end encrypted chat." />
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'" />
+    <title>That Boy Needs P2P · Private chat</title>
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <symbol id="i-wire" viewBox="0 0 24 24"><path d="M7 8h10a3 3 0 0 1 0 6h-2m-6-4H7a3 3 0 0 0 0 6h10M5 6l2 2-2 2m14 4-2 2 2 2"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/></symbol>
+      <symbol id="i-link" viewBox="0 0 24 24"><path d="m10 13 4-4m-6 7-1 1a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 8a3.5 3.5 0 0 0 5 0l4-4a3.5 3.5 0 0 0-5-5l-1 1" transform="translate(0 0)"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.25"/><path d="M5 20v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1"/></symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24"><path d="M5 5h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-6 3V7a2 2 0 0 1 2-2Z"/><path d="M8 10h8m-8 4h5"/></symbol>
+      <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-13-2 14"/></symbol>
+      <symbol id="i-network" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4m-6 4v-4h12v4"/></symbol>
+      <symbol id="i-send" viewBox="0 0 24 24"><path d="m3 4 18 8-18 8 3-8-3-8Zm3 8h15"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    </svg>
+
+    <header class="topbar">
+      <div class="top-inner">
+        <div class="brand">
+          <span class="brand-icon"><svg><use href="#i-wire"/></svg></span>
+          <span>That Boy Needs P2P</span>
+        </div>
+        <span class="connection" id="connection" role="status"><span class="status-dot"></span><span id="connection-label">Disconnected</span></span>
+      </div>
+    </header>
+
+    <main>
+      <div class="intro">
+        <div>
+          <h1>Private chat</h1>
+          <p>One-to-one, end-to-end encrypted messaging.</p>
+        </div>
+        <div class="session-actions">
+            <button type="button" class="button primary" id="create"><svg><use href="#i-link"/></svg>Create invite</button>
+        </div>
+      </div>
+
+      <div class="session-bar" id="session-bar" hidden>
+        <span id="session-note" role="status"></span>
+        <button type="button" class="button secondary compact" id="session-details">Session details</button>
+        <button type="button" class="button secondary compact" id="end">End session</button>
+      </div>
+
+      <div class="workspace">
+        <section class="pane" aria-labelledby="you-title">
+          <header class="pane-header">
+            <span class="pane-icon own"><svg><use href="#i-user"/></svg></span>
+            <div><h2 id="you-title">You</h2><p>Outgoing messages</p></div>
+          </header>
+          <div class="messages" id="outgoing" role="log" aria-label="Outgoing messages" tabindex="0">
+            <div class="empty" id="outgoing-empty"><span class="empty-icon"><svg><use href="#i-chat"/></svg></span><h3>Your messages</h3><p>What you send will appear here.</p></div>
+          </div>
+          <form class="compose" id="compose">
+            <div id="editor"></div>
+            <div class="compose-bar">
+              <span class="compose-hint" id="compose-hint">Waiting for a peer</span>
+              <button type="submit" class="button primary send" id="send" disabled>Send<svg><use href="#i-send"/></svg></button>
+            </div>
+          </form>
+        </section>
+
+        <section class="pane wire" aria-labelledby="wire-title">
+          <header class="pane-header">
+            <span class="pane-icon wire-icon"><svg><use href="#i-lock"/></svg></span>
+            <div><h2 id="wire-title">Encrypted traffic</h2><p>Live ciphertext</p></div>
+          </header>
+          <div class="wire-content">
+            <div class="empty" id="wire-empty"><span class="empty-icon"><svg><use href="#i-code"/></svg></span><h3>No traffic yet</h3><p>Encrypted messages will appear here as they travel between peers.</p></div>
+            <div id="wire-log" hidden></div>
+          </div>
+          <footer class="pane-footer"><span class="wire-dot"></span> ML-KEM-768 <span class="footer-sep">/</span> AES-256-GCM</footer>
+        </section>
+
+        <section class="pane" aria-labelledby="peer-title">
+          <header class="pane-header">
+            <span class="pane-icon peer"><svg><use href="#i-user"/></svg></span>
+            <div><h2 id="peer-title">Peer</h2><p>Incoming messages</p></div>
+          </header>
+          <div class="messages" id="incoming" role="log" aria-label="Incoming messages" tabindex="0">
+            <div class="empty" id="incoming-empty"><span class="empty-icon"><svg><use href="#i-chat"/></svg></span><h3 id="incoming-title">Waiting for a peer</h3><p id="incoming-note">Connect to see their messages here.</p></div>
+          </div>
+          <footer class="pane-footer peer-footer"><svg><use href="#i-lock"/></svg> Decrypted on this device</footer>
+        </section>
+      </div>
+
+      <footer class="workspace-footer">
+        <span><svg><use href="#i-network"/></svg> WebRTC connection</span>
+        <span>Messages clear when you end the session or reload.</span>
+      </footer>
+      <p id="notice" class="notice" role="status" hidden></p>
+    </main>
+
+    <dialog id="pairing" aria-labelledby="pair-title">
+      <div class="dialog-head">
+        <span class="pane-icon own"><svg><use href="#i-link"/></svg></span>
+        <button class="icon-button" type="button" id="close-dialog" aria-label="Close dialog"><svg><use href="#i-close"/></svg></button>
+      </div>
+      <h2 id="pair-title"></h2>
+      <p id="pair-note"></p>
+      <div id="pair-body"></div>
+    </dialog>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

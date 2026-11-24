@@ -1,0 +1,51 @@
+name: Publish GitHub Pages
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Build the static page
+        env:
+          VITE_SIGNAL_URL: ${{ vars.VITE_SIGNAL_URL }}
+        run: |
+          if [[ "$VITE_SIGNAL_URL" != https://* ]]; then
+            echo "::error::Set the repository variable VITE_SIGNAL_URL to the deployed Cloudflare Worker HTTPS origin."
+            exit 1
+          fi
+          npm run build
+          git archive --format=tar.gz -o dist/source.tar.gz HEAD
+          cp LICENSE dist/LICENSE
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
