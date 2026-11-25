@@ -5,7 +5,7 @@
   "compatibility_date": "2026-10-01",
   "workers_dev": true,
   "vars": {
-    "ALLOWED_ORIGINS": "http://localhost:4173,http://localhost:5173"
+    "ALLOWED_ORIGINS": "https://anj1.github.io/,http://localhost:4173,http://localhost:5173"
   },
   "durable_objects": {
     "bindings": [{ "name": "ROOMS", "class_name": "PairingRoom" }]
